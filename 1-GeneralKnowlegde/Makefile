@@ -26,7 +26,7 @@ all: shared static
 
 #Build strutils as dynamic lib and move it to linking directory
 $(SHARED_LIB):
-	$(CC) -c ${LIB_SOURCES} $(LIB_FLAGS) $(DEBUGFLAGS) -shared -o $(SHARED_LIB)
+	$(CC) ${LIB_SOURCES} $(LIB_FLAGS) $(DEBUGFLAGS) -shared -o $(SHARED_LIB)
 	mv $(SHARED_LIB) $(LINKING_DIR)
 
 #Build strutils as static lib and move it to linking directory

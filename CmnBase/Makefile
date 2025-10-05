@@ -18,7 +18,7 @@ RELEASEFLAGS = -O2 -D NDEBUG
 FLAGS = -fPIC -DLOG_USE_COLOR
 
 all: ${SOURCES}
-	$(CC) -c ${SOURCES} $(FLAGS) $(DEBUGFLAGS) -shared -o $(TARGET)
+	$(CC) ${SOURCES} $(FLAGS) $(DEBUGFLAGS) -shared -o $(TARGET)
 	mv $(TARGET) $(LINKING_DIR)
 .PHONY: all
 
