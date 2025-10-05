@@ -18,6 +18,7 @@ gcc -Wall -save-temps source_file.c -o output_file
 ```
 
 ## 📚 2. Static / Shared Library
+
 | Properties            | Static Library                                                                                   | Shared Library                                                                                                 |
 |-----------------------|--------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------|
 | Linking time          | Happens as the last step of the compilation process. After the program is placed in memory       | Added during linking process when executable file and libraries are added to memory                            |
@@ -28,6 +29,7 @@ gcc -Wall -save-temps source_file.c -o output_file
 | Compatibility         | No compatibility issues, all code is in one executable module                                    | Dependent on having a compatible library; program will not work if library is removed from the system          |
 
 ## ⚙️ 3. Makefile
+
 A Makefile is a script used by the make build automation tool to compile and link a program.
 
 The make program reads the contents of the Makefile and executes it.
@@ -35,9 +37,12 @@ The make program reads the contents of the Makefile and executes it.
 📌 Naming conventions: Makefile, makefile, or *.mk
 
 📐 Structure of a Makefile
-makefile
+
+```bash
 target: dependencies
     command
+```
+
 target: The file to be generated
 
 dependencies: The files required to build the target
@@ -45,6 +50,7 @@ dependencies: The files required to build the target
 command: The shell command to build the target (must start with a tab character)
 
 🔁 Automatic Variables
+
 | Variable | Description                                 |
 |----------|---------------------------------------------|
 | $@       | The name of the target in the current rule  |
