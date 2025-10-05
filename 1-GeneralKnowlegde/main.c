@@ -1,5 +1,5 @@
 #include "strutils.h"
-#include "../CmnBase/log.h"
+#include "../CmnBase/cmnbase.h"
 
 int main(int argc, char *argv){
     char str[] = " Hello World  ";

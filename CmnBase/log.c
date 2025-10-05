@@ -4,10 +4,15 @@
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the MIT license. See `log.c` for details.
  */
+#include <string.h>
+#include <stdint.h>
+#include <errno.h>
 
 #include "log.h"
 
 #define MAX_CALLBACKS 32
+#define MAX_ENAME 132
+extern char *ename[];
 
 typedef struct {
   log_LogFn fn;
@@ -48,6 +53,10 @@ static void stdout_callback(log_Event *ev) {
     ev->udata, "%s %-5s %s:%d: ",
     buf, level_strings[ev->level], ev->file, ev->line);
 #endif
+  if (ev->print_errno && ev->level >= LOG_ERROR) {
+    int32_t err = errno;
+    fprintf(ev->udata, " [errno %s: %s] ",  (err > 0 && err <= MAX_ENAME) ? ename[err] : "?UNKNOWN?", strerror(errno));
+  }
   vfprintf(ev->udata, ev->fmt, ev->ap);
   fprintf(ev->udata, "\n");
   fflush(ev->udata);
@@ -60,6 +69,10 @@ static void file_callback(log_Event *ev) {
   fprintf(
     ev->udata, "%s %-5s %s:%d: ",
     buf, level_strings[ev->level], ev->file, ev->line);
+  if (ev->print_errno && ev->level >= LOG_ERROR) {
+    int32_t err = errno;
+    fprintf(ev->udata, " [errno %s: %s] ",  (err > 0 && err <= MAX_ENAME) ? ename[err] : "?UNKNOWN?", strerror(errno));
+  }
   vfprintf(ev->udata, ev->fmt, ev->ap);
   fprintf(ev->udata, "\n");
   fflush(ev->udata);
@@ -122,12 +135,13 @@ static void init_event(log_Event *ev, void *udata) {
 }
 
 
-void log_log(int level, const char *file, int line, const char *fmt, ...) {
+void log_log(int level, const char *file, int line, bool print_ne, const char *fmt, ...) {
   log_Event ev = {
     .fmt   = fmt,
     .file  = file,
     .line  = line,
     .level = level,
+    .print_errno = print_ne,
   };
 
   lock();

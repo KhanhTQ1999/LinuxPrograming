@@ -1,7 +1,8 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <time.h>
 #include <sys/stat.h>
-#include "../CmnBase/log.h"
+#include "../CmnBase/cmnbase.h"
 
 // struct stat {
 //     dev_t     st_dev;     /* ID of device containing file */
@@ -32,14 +33,14 @@ const char* get_file_type(mode_t mode) {
 
 int main(int argc, char* argv[]){
     if(argc < 2){
-        log_info("Usage: %s <file_path>\n", argv[0]);
-        return -1;
+        log_info("Usage: %s <file_path>", argv[0]);
+        terminate(EXIT_FAILURE, true);
     }
 
     struct stat fs;
     if(lstat(argv[1], &fs) == -1){
-        log_error("Failed to retrieve file info for: %s\n", argv[1]);
-        return -1;
+        log_error_ne("Failed to retrieve file info for: %s", argv[1]);
+        terminate(EXIT_FAILURE, true);
     }
 
     log_info("\n"
