@@ -38,7 +38,7 @@ int main(int argc, char* argv[]){
     // Block every signal during the handler
     sigfillset(&sa.sa_mask);
 
-    // Intercept SIGHUP and SIGINT
+    // Intercept SIGALRM
     if (sigaction(SIGALRM, &sa, NULL) == -1) {
         log_error_ne("Cannot handle SIGALRM"); // Should not happen
     }
