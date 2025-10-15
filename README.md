@@ -129,7 +129,7 @@ A directory is a special type of file that maps filenames to inode numbers. It a
 
 This diagram shows how file descriptors map to system-wide open file descriptions and inodes:
 
-![Fd-Inode Diagram](./Image/2-FileSystem/Fd-Inode.png)
+![Fd-Inode Diagram](./Resource/2-FileSystem/Fd-Inode.png)
 
 #### 🔹 Per-Process Open File Table
 
@@ -197,7 +197,7 @@ App → write() → Kernel Space (cache, block I/O scheduler) → Storage Device
 
 This diagram shows the open file sequence:
 
-![Open File Sequence](./Image/2-FileSystem/OpenFileSequence.svg)
+![Open File Sequence](./Resource/2-FileSystem/OpenFileSequence.svg)
 
 ---
 
@@ -302,6 +302,12 @@ Most modern filesystems like `ext4` and `XFS` use journaling to ensure consisten
 
 ---
 
-### 12. Summary
 
-The Linux filesystem is a powerful layered architecture that supports a wide range of devices and formats. Understanding inodes, file descriptors, locking, and system-level operations helps you manage data more efficiently and securely.
+## 3. Process
+
+1. What is program and process
+2. Command line with argument
+3. Virtual memory and layout
+4. Memory leak and valgrin
+4. fork() and execl
+5. Zombie and Orphan process
