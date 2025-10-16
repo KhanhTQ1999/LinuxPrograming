@@ -300,14 +300,119 @@ Most modern filesystems like `ext4` and `XFS` use journaling to ensure consisten
 - `fsck` — Check and repair filesystem
 - `mkfs` — Create a new filesystem on a partition
 
+
+## 📘 Session 3: Process
+
+Linux manages running programs as processes, each with its own memory and lifecycle.
+
+🧠 **Program vs Process:**
+
+- A **program** is a passive set of instructions stored on disk.
+- A **process** is an active instance of a program in execution.
+- Multiple processes can be created from the same program.
+
 ---
 
+## 1. Command Line Arguments
 
-## 3. Process
+Linux programs can receive input via command-line arguments.
 
-1. What is program and process
-2. Command line with argument
-3. Virtual memory and layout
-4. Memory leak and valgrin
-4. fork() and execl
-5. Zombie and Orphan process
+🧾 **In C:**
+
+```c
+int main(int argc, char *argv[])
+```
+
+- `argc`: number of arguments
+- `argv`: array of argument strings
+
+🛠 **Example:**
+
+```c
+#include <stdio.h>
+int main(int argc, char *argv[]) {
+    for (int i = 0; i < argc; i++)
+        printf("Arg[%d]: %s\n", i, argv[i]);
+    return 0;
+}
+```
+
+---
+
+### 2. Virtual Memory Layout
+
+![Fd-Inode Diagram](./Resource/3-Process/VirtualMemory.png)
+
+Each process has its own virtual memory space, divided into segments:
+
+![Fd-Inode Diagram](./Resource/3-Process/MemoryLayout.png)
+
+- **Text**: compiled code - read only
+- **Data**: global/static variables
+- **Heap**: The heap is an area from which memory (for variables) can be dynamically allocated at run time (`malloc`). The top end of the heap is called the program break.
+- **Stack**: The stack is a dynamically growing and shrinking segment containing stack frames. One stack frame is allocated for each currently called function. A frame stores the function’s local variables (so-called automatic variables), arguments, and return value.
+
+![Fd-Inode Diagram](./Resource/3-Process/Stack.png)
+
+- **Bss**: uninitialized global/static variables
+
+---
+
+### 3. Memory Leak and Valgrind
+
+A memory leak occurs when allocated memory is not properly freed.
+
+🧪 **Valgrind** helps detect:
+
+- Memory leaks
+- Invalid memory access
+
+🛠 **Usage:**
+
+```bash
+valgrind --leak-check=full ./your_program
+```
+
+---
+
+### 4. Enviroment list
+- Each process has an associated array of strings called the environment list, or simplythe environment. Each of these strings is a definition of the form name=value. Thus, the environment represents a set of name-value pairs that can be used to hold arbitrary information. The names in the list are referred to as environment variables.
+
+```bash
+#include <stdio.h>
+$ SHELL=/bin/bash Create a shell variable
+$ export SHELL Put variable into shell process’s environment
+```
+
+![Fd-Inode Diagram](./Resource/3-Process/EnvList.png)
+
+### 5. fork() and execl()
+
+- `fork()` allows one process, the parent, to create a new process, the child. This is done by making the new child process an (almost) exact duplicate of the parent: the child obtains copies of the parent’s stack, data, heap and text segments (Section 6.3). The term fork derives from the fact that we can envisage the parent process as dividing to yield two copies of itsel
+- `exit()`  terminates a process, making all resources (memory, open file descriptors, and so on) used by the process available for subsequent reallocation by the kernel. The status argument is an integer thatdetermines the termination status for the process. Using the wait() system call, the parent can retrieve this status.
+- `wait()` System call has two purposes. First, if a child of this process has not yet terminated by calling exit(), then wait() suspends execution of the process until one of its children has terminated. Second, the termination status of the child is returned in the status argument of wait().
+- `execve()`  loads a new program (pathname, with argument list argv, and environment list envp) into a process’s memory. The existing program text is discarded, and the stack, data, and heap segments are freshly created for the new program. This operation is often referred to as execing a new program.
+
+![Fd-Inode Diagram](./Resource/3-Process/ForkWaitExe.png)
+
+🛠 **Example:**
+
+```c
+#include <unistd.h>
+int main() {
+    pid_t pid = fork();
+    if (pid == 0) {
+        execl("/bin/ls", "ls", NULL);
+    }
+    return 0;
+}
+```
+
+---
+
+### 5. Zombie and Orphan Processes
+
+- **Zombie**: child has exited but parent hasn't called `wait()`
+- **Orphan**: parent exits before child; child is adopted by `init`
+
+🛠 **Example:**
