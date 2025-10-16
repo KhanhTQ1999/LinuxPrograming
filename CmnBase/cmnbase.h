@@ -7,5 +7,6 @@
 
 #include "log.h"
 #include "error_handler.h"
+#include "../1-GeneralKnowlegde/strutils.h"
 
 #endif //_CMNBASE_H_
