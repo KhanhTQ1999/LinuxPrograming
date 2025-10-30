@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <string.h>
+#include <signal.h>
 #include <semaphore.h>
 #include <sys/mman.h>
 
@@ -45,6 +46,7 @@ typedef struct {
     Food items[MAX_ITEM];
 } ShareFoodBuffer;
 
+void handle_sigint(int sig);
 bool shmInit(ShareMemory* shm_ptr);
 bool spawnChildProcesses();
 pid_t forkWithHandlers(
@@ -52,6 +54,7 @@ pid_t forkWithHandlers(
     void (*parentHandler)(pid_t),
     void (*childHandler)(void)
 );
+void showFoodOnTray();
 void cleanup();
 void waitForChildren();
 void chefDonatello();
@@ -81,6 +84,8 @@ ForkHandler handlers[] = { // Handlers for child processes
 
 int main(int argc, char* argv[]){
     is_running = true;
+    signal(SIGINT, handle_sigint);
+
     food_shm[NON_VEGAN_SHM_IDX] = (ShareMemory) {
         .name = NON_VEGAN_SHM_NAME,
         .len = sizeof(ShareFoodBuffer)
@@ -99,17 +104,27 @@ int main(int argc, char* argv[]){
         terminate(EXIT_FAILURE, true);
     }
 
-
-
     if(!spawnChildProcesses()){
         terminate(EXIT_FAILURE, true);
     }
-
+    while(is_running){
+        showFoodOnTray();
+        sleep(10);
+    }
     waitForChildren();
     cleanup();
 
     return 0;
 }
+
+void handle_sigint(int sig) {
+    log_info("SIGINT received, cleaning up...");
+    is_running = false;
+    cleanup();
+    signal(SIGINT, SIG_DFL);  // Set default handler
+    raise(SIGINT);            // Re-raise the signal to terminate the program
+}
+
 
 bool shmInit(ShareMemory* shm_ptr) {
     char sem_name[64];
@@ -191,6 +206,10 @@ pid_t forkWithHandlers(
         }
         return cid;
     }
+}
+
+void showFoodOnTray() {
+    
 }
 
 void cleanup() {
